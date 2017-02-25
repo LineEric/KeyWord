@@ -1,4 +1,4 @@
-// KEY_WORD.cpp : ¶¨Òå DLL Ó¦ÓÃ³ÌĞòµÄµ¼³öº¯Êı¡£
+// KEY_WORD.cpp : å®šä¹‰ DLL åº”ç”¨ç¨‹åºçš„å¯¼å‡ºå‡½æ•°ã€‚
 //
 
 #include "stdafx.h"
@@ -11,11 +11,11 @@
 #include "Windows.h"
 #include "fstream"
 #include "stdafx.h"
-#include "KEY_WORD.h"//DLLÏà¹ØÍ·ÎÄ¼ş
+#include "KEY_WORD.h"//DLLç›¸å…³å¤´æ–‡ä»¶
 #pragma comment(lib, "sqlite3.lib")
 using namespace std;
 
-char* UTF8ToGBK(const char* strUTF8) {   //½øĞĞUTF8×ªÖÁGBK
+char* UTF8ToGBK(const char* strUTF8) {   //è¿›è¡ŒUTF8è½¬è‡³GBK
 	int len = MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, NULL, 0);
 	wchar_t* wszGBK = new wchar_t[len + 1];
 	memset(wszGBK, 0, len * 2 + 2);
@@ -30,7 +30,7 @@ char* UTF8ToGBK(const char* strUTF8) {   //½øĞĞUTF8×ªÖÁGBK
 	return szGBK;
 }
 
-char * GBKToUTF8(const char* strGBK) {  //GBK×ªÖÁUTF8
+char * GBKToUTF8(const char* strGBK) {  //GBKè½¬è‡³UTF8
 	int len = MultiByteToWideChar(CP_ACP, 0, strGBK, -1, NULL, 0);
 	wchar_t* wstr = new wchar_t[len + 1];
 	memset(wstr, 0, len + 1);
@@ -44,7 +44,7 @@ char * GBKToUTF8(const char* strGBK) {  //GBK×ªÖÁUTF8
 	return str;
 }
 
-char * Key_Word(char *msg)//DLLÖ÷Ìå
+char * Key_Word(char *msg)//DLLä¸»ä½“
 {
 	sqlite3 *conn = NULL;
 	sqlite3_stmt *order;
@@ -52,16 +52,16 @@ char * Key_Word(char *msg)//DLLÖ÷Ìå
 	char *SQL;
 	strcat(sql, msg);
 	strcat(sql, "';");
-	//ÉÏÊö½øĞĞSQLÖ¸Áî±àĞ´
+	//ä¸Šè¿°è¿›è¡ŒSQLæŒ‡ä»¤ç¼–å†™
 	vector<string> strs;
-	SQL = GBKToUTF8(sql); //ÔÚÓïÑÔÎª¼òÌåÖĞÎÄÏÂµÄVS2015ÒÔÏÂ½øĞĞ±àÒë²ÉÓÃÎªGBK2312
-	if (SQLITE_OK != sqlite3_open("qav2.db", &conn))//ÆäÖĞsqlite_open()µÄÊ¹ÓÃ½«Êı¾İ¿âÄÚ²¿½øĞĞUTF8±àÂë
+	SQL = GBKToUTF8(sql); //åœ¨è¯­è¨€ä¸ºç®€ä½“ä¸­æ–‡ä¸‹çš„VS2015ä»¥ä¸‹è¿›è¡Œç¼–è¯‘é‡‡ç”¨ä¸ºGBK2312
+	if (SQLITE_OK != sqlite3_open("qav2.db", &conn))//å…¶ä¸­sqlite_open()çš„ä½¿ç”¨å°†æ•°æ®åº“å†…éƒ¨è¿›è¡ŒUTF8ç¼–ç 
 		return "Open_ERROR";
 	int result = sqlite3_prepare_v2(conn, SQL, -1, &order, NULL);
 	if (SQLITE_OK != result)
 		return "prepare_error";
 
-	while (101 != sqlite3_step(order))//sqlite3_step()ÔÚ¶Ôsqlite²Ù×÷½áÊøºó»á·µ»Ø101
+	while (101 != sqlite3_step(order))//sqlite3_step()åœ¨å¯¹sqliteæ“ä½œç»“æŸåä¼šè¿”å›101
 	{
 		string str = string(UTF8ToGBK((const char *)sqlite3_column_text(order, 0)));
 		wcout << str.c_str() << endl;
@@ -69,7 +69,7 @@ char * Key_Word(char *msg)//DLLÖ÷Ìå
 	}
 	 sqlite3_finalize(order);
 	 sqlite3_close(conn);
-	//¶Ï¿ªÁ¬Í¨ÓëÇå³ıÖ¸Áî
+	//æ–­å¼€è¿é€šä¸æ¸…é™¤æŒ‡ä»¤
 	if (strs.empty())
 		return "NULL";//
 	else
@@ -82,7 +82,7 @@ char * Key_Word(char *msg)//DLLÖ÷Ìå
 		else
 			r = 0;
 		str = (char *)malloc(strs[r].size() * sizeof(char));
-		strcpy(str, strs[r].c_str());//ÎªÊ¹¶ÔÓ¦eÓïÑÔÎÄ±¾ĞÍ¼æÈİ
+		strcpy(str, strs[r].c_str());//ä¸ºä½¿å¯¹åº”eè¯­è¨€æ–‡æœ¬å‹å…¼å®¹
 		return str;
 	}
 }
